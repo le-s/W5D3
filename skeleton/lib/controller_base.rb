@@ -1,5 +1,6 @@
 require 'active_support'
 require 'active_support/core_ext'
+require 'active_support/inflector'
 require 'erb'
 require 'byebug'
 require_relative './session'
@@ -40,11 +41,12 @@ class ControllerBase
   # use ERB and binding to evaluate templates
   # pass the rendered html to render_content
   def render(template_name)
-    p path = File.dirname(__FILE__)
-    new_path = File.join('/views/', '#{template_name}.html.erb')
+    path = File.dirname(File.dirname(__FILE__))
+    controller_name = self.class.to_s.underscore
+    new_path = File.join("#{path}/views/#{controller_name}/", "/#{template_name}.html.erb")
     file_content = File.read(new_path)
     erb_code = ERB.new(file_content).result(binding)
-    render_content(erb_code)
+    render_content(erb_code, 'text/html')
   end
 
   # method exposing a `Session` object
